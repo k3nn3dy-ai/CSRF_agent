@@ -22,6 +22,8 @@ It crawls, authenticates, identifies risky flows, crafts payloads, verifies find
 
 ## ✨ Overview
 
+What is CSRF (Cross-Site-Request-Forgery)? - https://portswigger.net/web-security/csrf
+
 CSRF Agent v2 is a task‑driven, multi‑agent pipeline that helps you:
 - Discover login endpoints and authenticate against your target using provided credentials.
 - Perform wide and configurable crawling using `gospider`.
