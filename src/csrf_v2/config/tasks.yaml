@@ -6,6 +6,16 @@ authentication_task:
     {TARGET}
     </target_url>
 
+    Resolved inputs (authoritative):
+    - TARGET: {TARGET}
+    - CREDENTIALS: {CREDENTIALS}
+
+    Hard rules:
+    - If TARGET is empty, explicitly state "No TARGET provided" and stop this task.
+    - Never use placeholder domains (e.g., "targetsite.com"); only operate on the exact TARGET provided.
+    - Do not alter the scheme or strip query strings or trailing slashes from TARGET.
+    - Echo the exact TARGET and CREDENTIALS you will use before any commands.
+
     2. Crawling Process
     a) Use the gospider CLI tool to perform a comprehensive web crawl across the entire site.
     b) Configure gospider to identify and focus on pages that contain login forms or authentication-related endpoints.
@@ -13,7 +23,7 @@ authentication_task:
     d) Use the user guide for gospider to ensure optimal crawling configuration and to check for features that can help identify authentication mechanisms.
 
     3. Authentication Attempt
-    a) For each identified login page or authentication endpoint, attempt to login with 'curl' using the provided credentials. Make sure the request is like a normal login from the web page
+    a) For each identified login page or authentication endpoint, attempt to login with 'curl' using the provided credentials. Make sure the request mirrors the site's real login (method, headers, body).
     <credentials>
       {CREDENTIALS}
     </credentials>
@@ -60,6 +70,13 @@ csrf_identification_task:
 
         CRITICAL CONSTRAINT: Only operate on the target domain {TARGET}. Do not use any other domains or placeholders (e.g., "targetsite.com") in commands, URLs, payloads, or outputs.
 
+        Resolved inputs (authoritative):
+        - TARGET: {TARGET}
+
+        Hard rules:
+        - If TARGET is empty, explicitly state "No TARGET provided" and stop this task.
+        - Always echo the exact TARGET being used at the top of your output and before any command.
+        - Do not alter scheme, host, or path; do not strip query strings or trailing slashes.
 
         always use the authentication info in file auth.md from the authentication_task to complete the task:
 
@@ -128,11 +145,22 @@ csrf_testing_task:
   description: >
     You are a cybersecurity expert specializing in web application security testing. Your current task is to perform Cross-Site Request Forgery (CSRF) vulnerability testing on the URL's found by the crawler, this info is in crawler.md for reference:
 
-          CRITICAL CONSTRAINT: Only test endpoints on the target domain {TARGET}. Never use example domains like "targetsite.com".
+         
+
+          Resolved inputs (authoritative):
+          - TARGET: {TARGET}
+
+          Hard rules:
+          - If TARGET is empty, explicitly state "No TARGET provided" and stop this task.
+          - Echo the exact TARGET you will use at the very top of your output and before any command.
+          - Do not alter scheme, host, or path; do not strip query strings or trailing slashes.
 
           Before we begin, ensure you have access to the following tools:
           1. Curl: For making HTTP requests
-          2. Python HTTP server: always run this command in the background to ensure that it does not interfere with the agents access to shell:
+          2. Background HTTP server: Use the 'HttpServer' tool to avoid blocking the shell.
+             - Start:  HttpServer "start 8001"
+             - Status: HttpServer "status 8001"
+             - Stop:   HttpServer "stop 8001"
           3. for testing always use this email address in your payloads: andy.kennedy@sec0ps.co.uk
 
           This will allow you to host HTML pages for your CSRF tests without interrupting your main testing process.
@@ -151,7 +179,7 @@ csrf_testing_task:
                   Create CSRF test payloads based on the identified endpoints.
 
                 e. Exploit the vulnerability, 
-                  Use python to host any html page required for exploitation.
+                  Use the HttpServer tool to host any HTML page required for exploitation (do not run blocking shell commands).
                   Use Curl to trigger exploits.
 
                 f. Consider Impact and Severity:
