@@ -1,0 +1,82 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+
+# Editors / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python bytecode / compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+.conda/
+.python-version
+
+# Packaging / build artifacts
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+pip-wheel-metadata/
+*.egg-info/
+.installed.cfg
+
+# Test / coverage / caches
+.pytest_cache/
+.coverage
+coverage.*
+htmlcov/
+.cache/
+.nox/
+.tox/
+
+# Type checking
+.mypy_cache/
+.pytype/
+.pyre/
+.ruff_cache/
+
+# Logs
+logs/
+*.log
+logs.txt
+
+# Environment / secrets
+.env
+.env.*
+.envrc
+secrets.*
+*.pem
+*.key
+
+# Data / outputs
+gospider_output/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.orig
+
+

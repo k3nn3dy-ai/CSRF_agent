@@ -1,0 +1,201 @@
+<div align="center">
+
+# 🛡️ CSRF Agent v2 — Automated CSRF Recon, Testing, and Reporting
+
+Robust, end-to-end CSRF discovery and exploitation workflow powered by multi‑agent orchestration (CrewAI), LLMs (OpenAI/Anthropic), and real shell tools (`gospider`, `curl`).  
+It crawls, authenticates, identifies risky flows, crafts payloads, verifies findings, and ships a clean report.
+
+[![Python](https://img.shields.io/badge/Python-3.10–3.13-3776AB.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Poetry](https://img.shields.io/badge/Poetry-managed-1B1F23.svg?logo=poetry)](https://python-poetry.org/)
+[![CrewAI](https://img.shields.io/badge/CrewAI-0.51.1-0B84F3.svg)](https://github.com/joaomdmoura/crewai)
+[![LangChain](https://img.shields.io/badge/LangChain-0.2.x-1C3C3C.svg)](https://python.langchain.com/)
+[![LLM](https://img.shields.io/badge/LLM-OpenAI%20%2F%20Anthropic-5E5E5E.svg)](https://)
+
+</div>
+
+---
+
+## ✨ Overview
+
+CSRF Agent v2 is a task‑driven, multi‑agent pipeline that helps you:
+- Discover login endpoints and authenticate against your target using provided credentials.
+- Perform wide and configurable crawling using `gospider`.
+- Identify likely CSRF attack surfaces (forms, state‑changing endpoints, missing or weak token protections).
+- Generate practical CSRF payloads and attempt exploitation (with `curl` and hosted HTML proofs).
+- Verify findings and produce a concise, reproducible Markdown report.
+
+Artifacts are written to the repository root for easy review and diffing:
+- `auth.md` — Authentication discovery and outcomes (sessions, cookies, tokens)
+- `crawler.md` — Crawled URLs and surface enumeration
+- `payloads.md` — Crafted payloads and test notes
+- `verification.md` — Post‑report verification runs
+- `report.md` — Final, structured CSRF report
+- `logs.txt` — Run transcript
+- `gospider_output/` — Crawl artifacts
+
+Under the hood:
+- Orchestration via `CrewAI` in `src/csrf_v2/crew.py`
+- Entry point in `src/csrf_v2/main.py`
+- Agent and task instructions in `src/csrf_v2/config/agents.yaml` and `src/csrf_v2/config/tasks.yaml`
+- Shell integration using `ShellTool` to run `gospider`/`curl`
+
+---
+
+## ⚡ Quick Start
+
+1) Prerequisites
+- Python 3.10–3.13
+- `gospider` and `curl` available on PATH
+- An LLM provider configured via environment variables (OpenAI or Anthropic)
+
+2) Configure environment
+Create a `.env` file in the repo root:
+
+```bash
+# Target to assess
+TARGET="https://your-app.example"
+
+# Credential material (format is flexible for your flow; e.g., JSON, query, or form data)
+CREDENTIALS='{"username":"alice","password":"secret"}'
+
+# Choose one provider
+LLM_PROVIDER=openai          # or: anthropic
+
+# OpenAI (defaults to model "gpt-5" if unset)
+OPENAI_API_KEY=sk-...
+# OPENAI_MODEL=gpt-5
+
+# Anthropic (defaults to model "claude-sonnet-4-5-20250929" if unset)
+# ANTHROPIC_API_KEY=...
+# ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
+```
+
+3) Run
+- Easiest (macOS): double‑click `Run CSRF v2.command`
+- Or via script:
+
+```bash
+bash scripts/go.sh
+```
+
+- Or with Poetry:
+
+```bash
+poetry install
+poetry run csrf_v2
+# same as:
+# poetry run run_crew
+```
+
+- Or plain Python:
+
+```bash
+python -m csrf_v2.main
+```
+
+Outputs appear in the repo root (`auth.md`, `crawler.md`, `payloads.md`, `verification.md`, `report.md`, `logs.txt`, and `gospider_output/`).
+
+---
+
+## 🔍 What It Does (Pipeline)
+
+1. Authentication discovery  
+   Finds login endpoints during crawl, attempts login using your provided credentials, and captures session artifacts (cookies, tokens, headers).
+
+2. Crawler pass (`gospider`)  
+   Enumerates the application to build a URL inventory focused on state‑changing routes and form-heavy pages.
+
+3. CSRF identification  
+   Flags places where CSRF tokens may be absent, predictable, or weak; highlights high‑impact actions.
+
+4. Exploitation & payload generation  
+   Crafts HTML/`curl` payloads; can host simple HTML pages (local Python HTTP server) to validate real browser flows.
+
+5. Reporting & verification  
+   Produces a structured Markdown report with steps to reproduce and mitigation advice, then re‑verifies each issue.
+
+---
+
+## 🧰 Configuration & Structure
+
+- `src/csrf_v2/main.py` — Entry point; reads `TARGET` and `CREDENTIALS` from environment and kicks off the crew.
+- `src/csrf_v2/crew.py` — Defines agents (authentication, crawler, tester, reporter), tasks, and sequential process with logging.
+- `src/csrf_v2/config/agents.yaml` — Roles/goals/backstories for each agent.
+- `src/csrf_v2/config/tasks.yaml` — Detailed task prompts and expected output structures.
+- `scripts/go.sh` — Zero‑friction runner: creates `.venv`, installs the project editable, loads `.env`, executes the crew.
+- `Run CSRF v2.command` — macOS launcher that delegates to `scripts/go.sh`.
+
+Environment variables:
+- `TARGET` — Target base URL (required to do anything meaningful)
+- `CREDENTIALS` — Credential material to use for authentication attempts
+- `LLM_PROVIDER` — `openai` or `anthropic`
+- `OPENAI_API_KEY` / `OPENAI_MODEL` — OpenAI config (model defaults to `gpt-5`)
+- `ANTHROPIC_API_KEY` / `ANTHROPIC_MODEL` — Anthropic config (model defaults to `claude-sonnet-4-5-20250929`)
+
+---
+
+## 🗂️ Outputs & Artifacts
+
+- `auth.md` — Login endpoints, attempts, cookies/tokens captured, notes
+- `crawler.md` — Crawled URL list and high‑signal surfaces
+- `payloads.md` — Candidate payloads and exploitation attempts
+- `verification.md` — Verification results for each reported issue
+- `report.md` — Final consolidated report (severity, impact, steps to reproduce, recommendations)
+- `logs.txt` — Run logs from the agent pipeline
+- `gospider_output/` — Raw crawler outputs
+
+All these files are intentionally tracked in the repo root for side‑by‑side analysis.
+
+---
+
+## 🧪 Usage Tips
+
+- Keep credentials realistic so automated login attempts look like genuine browser flows.
+- Scope is strictly your `TARGET` domain—tasks are written to ignore placeholders and non‑target hosts.
+- If needed, tune prompts in `tasks.yaml` to match your application’s auth flows or CSRF defenses.
+- You can re‑run the pipeline to iterate payloads; artifacts will be updated, and `logs.txt` preserves the transcript.
+
+---
+
+## 🩺 Troubleshooting
+
+- “No LLM configured”  
+  Set `LLM_PROVIDER` and the relevant API key(s). Default models are chosen if not provided.
+
+- Too much console noise  
+  - Set `VERBOSE=false` to disable CrewAI verbose console logging (still writes `logs.txt`).  
+  - Optionally set `LOG_LEVEL=ERROR` (or `WARNING`) to further reduce library chatter.  
+  - Run in quiet mode by exporting `QUIET=1` before `bash scripts/go.sh` to redirect all stdout/stderr into `logs.txt`.
+
+- “No suitable Python (3.10–3.13) found”  
+  Install Python 3.11 or 3.12 and re‑run `scripts/go.sh` or use `poetry env use`.
+
+- `gospider: command not found`  
+  Install `gospider` and ensure it’s on PATH.
+
+- macOS can’t open `Run CSRF v2.command`  
+  Right‑click → Open (to bypass Gatekeeper) or run `bash "Run CSRF v2.command"` from Terminal.
+
+---
+
+## ⚖️ Legal & Ethical
+
+Use only on systems you own or have explicit, written authorization to test.  
+The authors and contributors are not responsible for misuse or damage.
+
+---
+
+## 🤝 Contributing
+
+Issues and PRs are welcome. Consider adding:
+- Additional payload strategies and verification heuristics
+- Provider‑specific LLM prompts and better model defaults
+- Enhanced parsing of `gospider` output and form extraction
+
+---
+
+## 📜 License
+
+No license specified. If you plan to distribute or modify, add an explicit license file.
+
+

@@ -1,0 +1,316 @@
+authentication_task:
+  description: >
+
+    1. The website you will be crawling is
+    <target_url>
+    {TARGET}
+    </target_url>
+
+    2. Crawling Process
+    a) Use the gospider CLI tool to perform a comprehensive web crawl across the entire site.
+    b) Configure gospider to identify and focus on pages that contain login forms or authentication-related endpoints.
+    c) Pay special attention to URL patterns that might indicate login pages (e.g., '/login', '/signin', '/auth').
+    d) Use the user guide for gospider to ensure optimal crawling configuration and to check for features that can help identify authentication mechanisms.
+
+    3. Authentication Attempt
+    a) For each identified login page or authentication endpoint, attempt to login with 'curl' using the provided credentials. Make sure the request is like a normal login from the web page
+    <credentials>
+      {CREDENTIALS}
+    </credentials>
+    b) If multiple credential sets are provided, attempt each one.
+    c) Capture all relevant information from successful logins, including
+      - Cookies
+      - Session IDs
+      - Authentication tokens
+      - Any other session-related data
+
+    4. You will have shell access to run the 'gospider' tool for the crawl and 'curl' for the login, refer to the user guides as needed.
+
+    5. After completing the crawl and authentication attempts, provide a summary including
+      - All identified login pages and authentication endpoints
+      - Results of login attempts (successful or failed)
+      - Captured session information for successful logins
+      - Any additional observations about the authentication mechanisms encountered
+
+    6. Ensure you review the instructions for 'gospider' and 'curl' to ensure correct usage and use relevant configuration to ensure a thorough scan. Do not move to the next step without completing the scan and authentication attempts.
+    7. IF no credentials have been provided move onto the next task stating, No credentials have been given.
+
+  expected_output: >
+
+    1. For each authentication mechanism or login page identified, provide the following information
+
+    <auth_test_info>
+    Target URL:[The URL of the login page or authentication endpoint]
+    Authentication Type:[e.g., Form-based, OAuth, JWT, Basic Auth, etc.]
+    Login Attempt Success:[Yes/No]
+    Credentials Used:[The set of credentials used for the login attempt]
+    Session Information
+      - Cookies [Any cookies set after successful login]
+      - Session ID [The session identifier, if available]
+      - Authentication Tokens [Any JWT or other auth tokens received]
+      - Headers [Any relevant authentication-related headers]
+    Redirect URL:[The URL redirected to after successful login, if applicable]
+    Authentication Protections:[Any observed security measures like CAPTCHA, 2FA, etc.]
+    Additional Notes:[Any relevant details about the login process or findings]
+    </auth_test_info>
+    
+csrf_identification_task:
+  description: >
+    You are an experienced web security professional tasked with identifying potential Cross-Site Request Forgery (CSRF) vulnerabilities on a target website. Your goal is to perform a comprehensive web crawl and analyze the results to identify areas that may be susceptible to CSRF attacks.
+
+        CRITICAL CONSTRAINT: Only operate on the target domain {TARGET}. Do not use any other domains or placeholders (e.g., "targetsite.com") in commands, URLs, payloads, or outputs.
+
+
+        always use the authentication info in file auth.md from the authentication_task to complete the task:
+
+        1. Web Crawling:
+          a) Use the 'gospider' CLI tool to perform a thorough web crawl of the entire target site.
+          b) Consult the gospider user guide to ensure optimal configuration and utilize advanced crawling features as needed.
+          c) Make sure the crawl is complete before proceeding to the next step.
+
+        2. CSRF Vulnerability Identification:
+          a) You have shell access to use Curl in order to craft any payloads.
+          a) Analyze the crawl results to identify pages, forms, and user-controlled input fields that may be vulnerable to CSRF attacks.
+          b) Pay special attention to:
+              - Forms that perform state-changing actions (e.g., user profile updates, password changes)
+              - Endpoints that handle sensitive operations (e.g., fund transfers, account deletions)
+              - Areas where authentication tokens or CSRF protections may be missing or inadequate
+
+        3. Vulnerability Documentation:
+          For each potential CSRF vulnerability you identify, document the following information:
+
+          <csrf_vulnerability_info>
+          URL: [URL of the vulnerable page]
+          Title: [Title of the page]
+          Vulnerable Action: [Description of the action that may be vulnerable to CSRF]
+          Form Method: [GET/POST]
+          CSRF Protections Present: [List any existing CSRF protections, if any]
+          Potential Impact: [Describe the potential consequences if exploited]
+          Suggested Mitigation: [Briefly suggest how to address the vulnerability]
+          </csrf_vulnerability_info>
+
+        4. Severity Categorization:
+          Categorize each identified vulnerability by severity (Low, Medium, High, Critical) based on the potential impact and ease of exploitation.
+
+        5. Summary and URL List:
+          a) Provide a concise summary of your findings, including the number of potential CSRF vulnerabilities found and their severity distribution.
+          b) List all URLs crawled during the process.
+
+        Before providing your final output, wrap your detailed analysis in <csrf_vulnerability_analysis> tags. In this analysis:
+        - List potential CSRF attack vectors and common patterns you're looking for.
+        - Consider the context of each form or action, including user permissions and data sensitivity.
+        - For each potential vulnerability, explicitly state your reasoning for its severity categorization.
+        - Discuss how the absence of CSRF tokens or other protections might impact security.
+        - Consider the potential for chaining CSRF with other vulnerabilities.
+        - Analyze the criticality of the actions that could be performed through CSRF.
+
+  expected_output: >
+  
+        Your final output should follow this structure:
+
+        <csrf_vulnerability_analysis>
+        [Your detailed analysis of potential CSRF vulnerabilities]
+        </csrf_vulnerability_analysis>
+
+        <summary>
+        [A concise summary of findings]
+        </summary>
+
+        <crawled_urls>
+        [List of all crawled URLs]
+        </crawled_urls>
+
+        <csrf_vulnerabilities>
+        [Detailed information about each potential CSRF vulnerability, using the csrf_vulnerability_info structure]
+        </csrf_vulnerabilities>
+
+csrf_testing_task:
+  description: >
+    You are a cybersecurity expert specializing in web application security testing. Your current task is to perform Cross-Site Request Forgery (CSRF) vulnerability testing on the URL's found by the crawler, this info is in crawler.md for reference:
+
+          CRITICAL CONSTRAINT: Only test endpoints on the target domain {TARGET}. Never use example domains like "targetsite.com".
+
+          Before we begin, ensure you have access to the following tools:
+          1. Curl: For making HTTP requests
+          2. Python HTTP server: always run this command in the background to ensure that it does not interfere with the agents access to shell:
+          3. for testing always use this email address in your payloads: andy.kennedy@sec0ps.co.uk
+
+          This will allow you to host HTML pages for your CSRF tests without interrupting your main testing process.
+
+                Instructions:
+                a. Review Information:
+                  Carefully review all the information provided by the csrf_identification_task agent for the target website.
+
+                b. Identify URLs:
+                  Create a list of all URLs that need to be tested for CSRF vulnerabilities.
+
+                c. Analyze Website Structure:
+                  Examine the website structure and identify potential CSRF-vulnerable endpoints.
+
+                d. Design Test Payloads:
+                  Create CSRF test payloads based on the identified endpoints.
+
+                e. Exploit the vulnerability, 
+                  Use python to host any html page required for exploitation.
+                  Use Curl to trigger exploits.
+
+                f. Consider Impact and Severity:
+                  Evaluate the potential impact and severity of CSRF vulnerabilities for each endpoint.
+
+          Before proceeding with the actual testing, wrap your analysis inside <csrf_analysis> tags. Include:
+          - A list of identified URLs for testing
+          - Potential CSRF-vulnerable endpoints
+          - Sample CSRF test payloads
+          - Potential impact and severity of CSRF vulnerabilities for each endpoint
+
+          This analysis will help ensure a thorough and systematic approach to CSRF vulnerability testing.
+  expected_output: >
+        Reporting Format:
+        For each tested URL, provide the following information:
+
+        <csrf_test_info>
+        Target URL: [The URL where testing occurred]
+        Functionality: [Brief description of the URL's purpose]
+        Vulnerability Detected: [Yes/No]
+        Successful Payload: [If applicable, the payload that successfully exploited the vulnerability]
+        Evidence of Exploitation: [Detailed description of how the CSRF vulnerability was confirmed]
+        Impact: [Potential consequences of the vulnerability if exploited by an attacker]
+        Mitigation Recommendations: [Suggestions for fixing the vulnerability]
+        Additional Notes: [Any relevant details about the testing process or findings]
+        </csrf_test_info>
+
+        Before testing each URL, wrap your analysis in <csrf_analysis> tags. Consider the following:
+        1. URL Structure Analysis:
+          - What is the purpose of this URL?
+          - Are there any parameters that could be manipulated?
+          - Is it a GET or POST request?
+
+        2. Potential Vulnerabilities:
+          - What type of CSRF attack would be most effective?
+          - Are there any visible CSRF protections in place?
+          - How might these protections be bypassed?
+
+        3. Test Case Planning:
+          - List specific test cases to try (e.g., removing CSRF token, using an invalid token)
+          - Outline steps to reproduce each test case
+
+        4. Payload Brainstorming:
+          - Develop at least three potential CSRF payloads tailored to this URL
+          - Explain the rationale behind each payload
+
+        5. Impact Assessment:
+          - How can you demonstrate the impact of a successful CSRF attack?
+          - What unauthorised actions could an attacker potentially perform?
+
+reporting_task:
+  description: >
+      You will be provided with details about CSRF vulnerabilities in the following format:
+        <csrf_test_info>
+        Target URL: [The URL where testing occurred]
+        Authentication Required: [Yes/No]
+        Vulnerability Detected: [Yes/No]
+        Token Present: [Yes/No]
+        Token Validation: [Validation status of the token if present]
+        Evidence of Exploitation: [Evidence indicating vulnerability, e.g., unauthorized action success]
+        Bypass Techniques: [Any techniques or encodings used to bypass protections]
+        Additional Notes: [Any relevant details about the testing process or findings]
+        </csrf_test_info>
+
+      For each and every Target URL, create a vulnerability report following these guidelines:
+
+      1. Keep the report concise and to the point.
+      2. Use a structured format for clarity and ease of understanding.
+      3. Include all necessary information to understand and reproduce the vulnerability.
+      4. Avoid technical jargon unless absolutely necessary.
+      5. Do this for all vulnerabilities found during testing.
+
+      Your report should be structured as follows:
+
+      <vulnerability_report>
+      <title>CSRF Vulnerability Report</title>
+      <vulnerability_confidence> Number from 0-10 (10 being 100% confident) that the vulnerability exists
+
+      <summary>
+      Briefly describe the vulnerability in 1-2 sentences.
+      </summary>
+
+      <severity>
+      Rate the severity as Low, Medium, High, or Critical, and provide a brief justification.
+      </severity>
+
+      <affected_components>
+      List the affected components or pages.
+      </affected_components>
+
+      <description>
+      Provide a more detailed explanation of the CSRF vulnerability, including how it could be exploited.
+      </description>
+
+      <authentication>
+      State if the vuln requires Authentication or can be done unuauthenticated. IF authenticated which credentials were used?
+      </authentication>
+
+      <steps_to_reproduce>
+      1. Step 1
+      2. Step 2
+      3. Step 3
+      ...
+      </steps_to_reproduce>
+
+      <command_to_replicate>
+      Provide the HTML form setup or command that can replicate the CSRF attack.
+      </command_to_replicate>
+
+      <impact>
+      Describe the potential impact of this vulnerability if exploited.
+      </impact>
+
+      <evidence_of_vulnerability>
+      Describe and show the output evidence that confirmed the vulnerability, such as unauthorized action success.
+      </evidence_of_vulnerability>
+
+      <recommendations>
+      Provide brief recommendations for fixing the vulnerability.
+      </recommendations>
+
+      <list_of_tested_urls>
+      Provide a list of all the URLs tested.
+      </list_of_tested_urls>
+      </vulnerability_report>
+
+      Repeat for each vulnerability
+
+      IMPORTANT: Only reference URLs on the target domain {TARGET}. Do not use placeholder/example domains such as "targetsite.com" anywhere in the report.
+
+      Now, using the provided vulnerability details, create a concise and structured CSRF vulnerability report in Markdown following the format and guidelines above. Ensure that your report is clear, informative, and includes all necessary information for understanding and reproducing the vulnerability.
+
+  expected_output: >
+    Vulnerability report formatted as Markdown without '```'
+vuln_verification_task:
+  description: >
+    Follow these instructions carefully to verify the CSRF vulnerabilities reported in the vulnerability_report on the target using available tools:
+
+    1. Review all the vulnerabilities listed in the vulnerability_report created by the reporting_agent.
+    2. Your aim is to test every vulnerable URL by following the provided payloads and reproduction steps.
+
+    3. CSRF Testing Process:
+
+        a) Use a crafted HTML form to perform verification of CSRF vulnerabilities on the URLs provided, aiming to confirm they are vulnerable as reported.
+        b) Document both successful and failed CSRF attempts.
+
+    4. Every vulnerability should be verified before task completion.
+
+    CRITICAL CONSTRAINT: Only verify URLs on the target domain {TARGET}. Do not test or reference any other domains.
+
+  expected_output: >
+    1. For each CSRF vulnerability verified, provide the following information:
+
+    <verification>
+    Target URL: [The URL where testing occurred]
+    Vulnerability Verified: [Yes/No]
+    Token Present: [Yes/No]
+    Successful Exploit: [Details of the form or script that successfully exploited the vulnerability]
+    Evidence of Successful Exploitation: [Evidence showing that the CSRF vulnerability was confirmed, such as an unauthorized action being completed]
+    Additional Notes: [Any relevant details about the testing process or findings]
+    Report Improvement Suggestions: [Any recommendations to improve the report’s clarity, structure, or accuracy]
+    </verification>

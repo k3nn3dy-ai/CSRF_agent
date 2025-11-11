@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "csrf_v2"
+version = "0.1.0"
+description = "Next-gen CSRF crew (Anthropic Sonnet 4.5 only)"
+authors = ["You <you@example.com>"]
+package-mode = true
+packages = [{ include = "csrf_v2", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<=3.13"
+python-dotenv = "^1.0.1"
+crewai = "0.51.1"
+crewai-tools = "0.8.3"
+langchain = "0.2.17"
+langchain-core = "0.2.43"
+langchain-community = "0.2.19"
+langchain-anthropic = "0.1.20"
+anthropic = "0.72.0"
+requests = "^2.32.3"
+PyYAML = "^6.0.2"
+
+[tool.poetry.scripts]
+csrf_v2 = "csrf_v2.main:run"
+run_crew = "csrf_v2.main:run"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
