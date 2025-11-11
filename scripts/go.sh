@@ -50,6 +50,10 @@ fi
 export PYTHONPATH="$proj_root/src"
 if [[ "${QUIET:-0}" == "1" ]]; then
 	echo "Running in QUIET mode; streaming output to logs.txt"
+	# Hide Python warnings unless explicitly overridden by user
+	if [[ -z "${PYTHONWARNINGS:-}" ]]; then
+		export PYTHONWARNINGS=ignore
+	fi
 	exec python -m csrf_v2.main >> logs.txt 2>&1
 else
 	exec python -m csrf_v2.main

@@ -154,6 +154,12 @@ All these files are intentionally tracked in the repo root for side‑by‑side 
 - Scope is strictly your `TARGET` domain—tasks are written to ignore placeholders and non‑target hosts.
 - If needed, tune prompts in `tasks.yaml` to match your application’s auth flows or CSRF defenses.
 - You can re‑run the pipeline to iterate payloads; artifacts will be updated, and `logs.txt` preserves the transcript.
+- Hosting payloads without hanging the agent: use the built‑in `HttpServer` tool instead of a blocking shell command. Examples the agent can invoke:
+  - `HttpServer`: "start" (defaults to port 8001, directory ".")
+  - `HttpServer`: "start 8001 ./public"
+  - `HttpServer`: "status 8001"
+  - `HttpServer`: "stop 8001"
+  Logs write to `http_server_<port>.log`, PID stored in `.http_server_<port>.pid`.
 
 ---
 
