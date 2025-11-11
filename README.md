@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ CSRF Agent v2 — Automated CSRF Recon, Testing, and Reporting
+# CSRF Agent v2 — Automated CSRF Recon, Testing, and Reporting
 
 Robust, end-to-end CSRF discovery and exploitation workflow powered by multi‑agent orchestration (CrewAI), LLMs (OpenAI/Anthropic), and real shell tools (`gospider`, `curl`).  
 It crawls, authenticates, identifies risky flows, crafts payloads, verifies findings, and ships a clean report.
