@@ -14,6 +14,11 @@ It crawls, authenticates, identifies risky flows, crafts payloads, verifies find
 </div>
 
 ---
+<img width="1258" height="711" alt="image" src="https://github.com/user-attachments/assets/eca21d39-5210-4a08-84de-8b90b1c4a99d" />
+<img width="1263" height="716" alt="image" src="https://github.com/user-attachments/assets/3cca3ceb-df9d-4423-a838-5d77003953f2" />
+<img width="1270" height="719" alt="image" src="https://github.com/user-attachments/assets/7be20959-9a6b-47a8-a1c1-a2001d7c9a7a" />
+<img width="1271" height="720" alt="image" src="https://github.com/user-attachments/assets/26580267-ed02-4e75-8412-8e0ff15b05ab" />
+<img width="1268" height="709" alt="image" src="https://github.com/user-attachments/assets/ae5ee509-7242-4c04-b559-cef6c7cc1c04" />
 
 ## ✨ Overview
 
