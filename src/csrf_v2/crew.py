@@ -32,14 +32,38 @@ _configure_logging()
 
 def _configure_warnings():
 	# Suppress noisy shell tool warning unless explicitly allowed
-	if (os.getenv("ALLOW_SHELL_WARNINGS") or "0").lower() in ("1", "true", "yes", "y"):
-		return
-	warnings.filterwarnings(
-		"ignore",
-		message="The shell tool has no safeguards by default. Use at your own risk.",
-		category=UserWarning,
-		module=r"langchain_community\.tools\.shell\.tool",
-	)
+	if (os.getenv("ALLOW_SHELL_WARNINGS") or "0").lower() not in ("1", "true", "yes", "y"):
+		warnings.filterwarnings(
+			"ignore",
+			message="The shell tool has no safeguards by default. Use at your own risk.",
+			category=UserWarning,
+			module=r"langchain_community\.tools\.shell\.tool",
+		)
+
+	# Suppress Pydantic v2 deprecation warnings from upstream libs (crewai, crewai-tools)
+	if (os.getenv("ALLOW_PYDANTIC_WARNINGS") or "0").lower() not in ("1", "true", "yes", "y"):
+		try:
+			# Pydantic v2 exposes a specific warning class
+			from pydantic import PydanticDeprecatedSince20 as _PydanticV2Dep
+		except Exception:
+			_PydanticV2Dep = DeprecationWarning
+
+		# Ignore pydantic v1-style usage coming from crewai and crewai-tools only
+		warnings.filterwarnings("ignore", category=_PydanticV2Dep, module=r"^crewai(\.|$)")
+		warnings.filterwarnings("ignore", category=_PydanticV2Dep, module=r"^crewai_tools(\.|$)")
+		# Extra guards using message regex for environments lacking the specific class
+		warnings.filterwarnings(
+			"ignore",
+			message=r".*class-based `config` is deprecated.*",
+			category=DeprecationWarning,
+			module=r"^crewai(\.|$)",
+		)
+		warnings.filterwarnings(
+			"ignore",
+			message=r".*V1 style `@validator` validators are deprecated.*",
+			category=DeprecationWarning,
+			module=r"^crewai_tools(\.|$)",
+		)
 
 
 _configure_warnings()
@@ -249,6 +273,7 @@ class CsrfCrew():
 		return Task(
 			config=self.tasks_config['csrf_identification_task'],
 			agent=self.web_crawler(),
+			context=[self.authentication_task()],
 			output_file="crawler.md"
 		)
 
@@ -257,6 +282,7 @@ class CsrfCrew():
 		return Task(
 			config=self.tasks_config['csrf_testing_task'],
 			agent=self.tester(),
+			context=[self.csrf_identification_task(), self.authentication_task()],
 			output_file="payloads.md"
 		)
 
@@ -265,6 +291,7 @@ class CsrfCrew():
 		return Task(
 			config=self.tasks_config['reporting_task'],
 			agent=self.reporting_agent(),
+			context=[self.csrf_testing_task(), self.csrf_identification_task()],
 			output_file='report.md'
 		)
 
@@ -273,6 +300,7 @@ class CsrfCrew():
 		return Task(
 			config=self.tasks_config['vuln_verification_task'],
 			agent=self.tester(),
+			context=[self.reporting_task(), self.csrf_testing_task()],
 			output_file='verification.md'
 		)
 

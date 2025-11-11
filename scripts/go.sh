@@ -36,7 +36,7 @@ if [[ ! -d ".venv" ]]; then
 fi
 source .venv/bin/activate
 
-python -m pip install -U pip >/dev/null
+python -m pip install -U pip setuptools wheel >/dev/null
 python -m pip install -e . >/dev/null
 
 # Load .env if present

@@ -80,6 +80,11 @@ csrf_identification_task:
 
         always use the authentication info in file auth.md from the authentication_task to complete the task:
 
+        Authentication for Crawl:
+          a) Review prior task context and 'auth.md' for existing cookies/session tokens. If present, treat these as the source of truth and reuse them.
+          b) If no valid session is available, explicitly perform login using {CREDENTIALS} to obtain a fresh authenticated session. Capture cookies/session tokens.
+          c) Ensure all crawl requests are authenticated by passing cookies/headers to 'gospider' and 'curl' as needed (e.g., -H 'Cookie: <cookie-value>' and any required Authorization headers).
+
         1. Web Crawling:
           a) Use the 'gospider' CLI tool to perform a thorough web crawl of the entire target site.
           b) Consult the gospider user guide to ensure optimal configuration and utilize advanced crawling features as needed.
