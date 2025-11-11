@@ -23,6 +23,10 @@ It crawls, authenticates, identifies risky flows, crafts payloads, verifies find
 ## ✨ Overview
 
 What is CSRF (Cross-Site-Request-Forgery)? - https://portswigger.net/web-security/csrf
+`All testing has been performed on PortSwigger Labs for CSRF.` 
+
+<img width="1022" height="604" alt="image" src="https://github.com/user-attachments/assets/d74e256e-5955-4561-b49a-02984c8e494b" />
+
 
 CSRF Agent v2 is a task‑driven, multi‑agent pipeline that helps you:
 - Discover login endpoints and authenticate against your target using provided credentials.
