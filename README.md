@@ -124,9 +124,8 @@ Outputs appear in the repo root (`auth.md`, `crawler.md`, `payloads.md`, `verifi
 
 5. Reporting & verification  
    Produces a structured Markdown report with steps to reproduce and mitigation advice, then re‑verifies each issue.
-
-   ```
-   <vulnerability_report> 
+```
+<vulnerability_report> 
 <title>CSRF Vulnerability Report</title> 
 <vulnerability_confidence>9</vulnerability_confidence> 
 <summary>A CSRF vulnerability exists in the email update functionality, allowing unauthorized email changes.</summary> 
