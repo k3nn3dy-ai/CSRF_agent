@@ -125,6 +125,37 @@ Outputs appear in the repo root (`auth.md`, `crawler.md`, `payloads.md`, `verifi
 5. Reporting & verification  
    Produces a structured Markdown report with steps to reproduce and mitigation advice, then re‑verifies each issue.
 
+   ```
+   <vulnerability_report> 
+<title>CSRF Vulnerability Report</title> 
+<vulnerability_confidence>9</vulnerability_confidence> 
+<summary>A CSRF vulnerability exists in the email update functionality, allowing unauthorized email changes.</summary> 
+<severity>High - The ability to change user email addresses without CSRF protection poses a significant security risk.</severity> 
+<affected_components>My Account - Change Email</affected_components> 
+<description>The CSRF vulnerability allows an attacker to change a user's email address by submitting a forged request. This can be done without any CSRF tokens in place, leading to unauthorized access and potential account takeover.</description> 
+<authentication>Yes, the vulnerability requires authentication.</authentication> 
+<steps_to_reproduce> 
+1. Log in to an account with valid credentials. 
+2. Access the email change form. 
+3. Submit the CSRF payload to change the email address. 
+</steps_to_reproduce> 
+<command_to_replicate> 
+<form action="https://0a5f003c04cf4b1685023f5400b700de.web-security-academy.net/my-account/change-email" method="POST"> 
+<input type="hidden" name="email" value="attacker@evil.com"> 
+<input type="submit" value="Update Email"> 
+</form> 
+</command_to_replicate> 
+<impact>If exploited, an attacker could change the email address of a user, leading to account takeover or exposure of sensitive information.</impact> 
+<evidence_of_vulnerability>The CSRF payload was executed successfully, changing the email to "attacker@evil.com" without proper CSRF protection.</evidence_of_vulnerability> 
+<recommendations>Implement CSRF tokens in forms and regularly audit for CSRF protections.</recommendations> 
+<list_of_tested_urls> 
+https://0a5f003c04cf4b1685023f5400b700de.web-security-academy.net/my-account?id=wiener, 
+https://0a5f003c04cf4b1685023f5400b700de.web-security-academy.net/logout, 
+https://0a5f003c04cf4b1685023f5400b700de.web-security-academy.net/my-account/change-email 
+</list_of_tested_urls> 
+</vulnerability_report>
+```
+
 ---
 
 ## 🧰 Configuration & Structure
